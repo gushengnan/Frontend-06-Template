@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gobang</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .board {
+            border: 1px solid rgb(90, 90, 90);
+            width: 750px;
+            height: 750px;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: row;
+            width: 750px;
+        }
+
+        .cell {
+            box-sizing: border-box;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: background-color .3s;
+            background-color: #c4c4c4;
+        }
+
+        .cell:hover {
+            background-color: cornflowerblue;
+            transition: background-color .3s;
+        }
+
+        /* 黑白间隔背景 */
+        .row:nth-child(odd) .cell:nth-child(odd),
+        .row:nth-child(even) .cell:nth-child(even) {
+            background-color: #7a7a7a;
+            transition: background-color .3s;
+        }
+
+        .row:nth-child(odd) .cell:nth-child(odd):hover,
+        .row:nth-child(even) .cell:nth-child(even):hover {
+            background-color: cornflowerblue;
+            transition: background-color .3s;
+        }
+
+        /* 白色棋子 */
+        .white-chess {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(15px 15px at 15px 15px, #fff, #e2e2e2);
+            margin: 5px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 黑色棋子 */
+        .black-chess {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(10px 10px at 15px 15px, #fff, #333);
+            margin: 5px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="board"></div>
+    <script>
+        let $board = document.getElementsByClassName("board")[0];
+        const size = 15;
+        const whiteColor = 1;
+        const blackColor = 2;
+
+        function nextColor(color) {
+            return 3 - color;
+        }
+
+        // 生成棋盘
+        function generateBoard($container, pattern) {
+            // 清空容器DOM里的内容
+            $container.innerHTML = "";
+            let size = 15;
+            for (let rowIdx = 0; rowIdx < size; rowIdx++) {
+                const rowDom = document.createElement('div');
+                rowDom.classList.add('row');
+                rowDom.setAttribute('row-index', rowIdx);
+                $container.appendChild(rowDom);
+
+                for (let colIdx = 0; colIdx < size; colIdx++) {
+                    const cellDom = document.createElement('div');
+                    cellDom.classList.add('cell');
+                    cellDom.setAttribute('row-index', rowIdx);
+                    cellDom.setAttribute('col-index', colIdx);
+                    let color = pattern[rowIdx][colIdx];
+                    if (color !== 0) {
+                        cellDom.appendChild(generateChess(pattern[rowIdx][colIdx]))
+                    }
+                    rowDom.appendChild(cellDom)
+                }
+
+            }
+
+        }
+
+        function generateChess(color) {
+            const className = color === whiteColor ? 'white-chess' : color === blackColor ? 'black-chess' : '';
+            const $chess = document.createElement('div');
+            $chess.classList.add(className);
+            return $chess;
+        }
+
+        function addChessOntoDom($container, color) {
+            let $chess = generateChess(color);
+            $container.appendChild($chess);
+        }
+
+        // 落子事件回调函数
+        function chessMove($cell) {
+            const rowIdx = Number($cell.getAttribute('row-index'));
+            const colIdx = Number($cell.getAttribute('col-index'));
+            addChessOntoDom($cell, playerColor)
+            pattern[rowIdx][colIdx] = playerColor;
+            if (checkWin([rowIdx, colIdx], size, playerColor, pattern)) {
+                alert(`color ${playerColor} won!`)
+            }
+            playerColor = nextColor(playerColor);
+        }
+
+        // 每次落子根据落子位置和颜色判断胜利
+        function checkWin(position, size, color, pattern) {
+            /** 在落子位置检测以下四种情况中是否存在连续5子颜色相同的情况来判断胜利
+             *  需要判断靠边数量不足的情况
+             * - - - - - - - - -     - - - - o - - - -    - - - - - - - - o    o - - - - - - - -
+             * - - - - - - - - -     - - - - o - - - -    - - - - - - - o -    - o - - - - - - -
+             * - - - - - - - - -     - - - - o - - - -    - - - - - - o - -    - - o - - - - - -
+             * - - - - - - - - -     - - - - o - - - -    - - - - - o - - -    - - - o - - - - -
+             * o o o o x o o o o     - - - - x - - - -    - - - - x - - - -    - - - - x - - - -
+             * - - - - - - - - -     - - - - o - - - -    - - - o - - - - -    - - - - - o - - -
+             * - - - - - - - - -     - - - - o - - - -    - - o - - - - - -    - - - - - - o - -
+             * - - - - - - - - -     - - - - o - - - -    - o - - - - - - -    - - - - - - - o -
+             * - - - - - - - - -     - - - - o - - - -    o - - - - - - - -    - - - - - - - - o
+            */
+            const [rowIdx, colIdx] = position;
+            // 以落子点为中心的上下左右间隔 4 子的边界
+            const boundry = {
+                left: colIdx < 4 ? 0 : colIdx - 4,
+                right: colIdx > (size - 1) - 4 ? (size - 1) : colIdx + 4,
+                top: rowIdx < 4 ? 0 : rowIdx - 4,
+                bottom: rowIdx > (size - 1) - 4 ? (size - 1) : rowIdx + 4,
+            };
+
+            // TODO
+            /** 
+             * 以点击点为中心米字型的四个方向上同色棋子的累加量
+             * countRow: 左右方向累
+             */
+            // let countRow = 1;
+            // let countCol = 1;
+            // let countTLBR = 1;
+            // let countBLTR = 1;
+
+
+            // TODO
+            /** 搜索顺序：1 - 2 - 3 - 4，任意一层有符合条件的结果则不继续向下一圈搜索, 广度优先
+             * - - - - - - - - -    - - - - - - - - -    - - - - - - - - -    4 - - - 4 - - - 4
+             * - - - - - - - - -    - - - - - - - - -    - 3 - - 3 - - 3 -    - 3 - - 3 - - 3 -
+             * - - - - - - - - -    - - 2 - 2 - 2 - -    - - 2 - 2 - 2 - -    - - 2 - 2 - 2 - -
+             * - - - 1 1 1 - - -    - - - 1 1 1 - - -    - - - 1 1 1 - - -    - - - 1 1 1 - - -
+             * - - - 1 x 1 - - -    - - 2 1 x 1 2 - -    - 3 2 1 x 1 2 3 -    4 3 2 1 x 1 2 3 4
+             * - - - 1 1 1 - - -    - - - 1 1 1 - - -    - - - 1 1 1 - - -    - - - 1 1 1 - - -
+             * - - - - - - - - -    - - 2 - 2 - 2 - -    - - 2 - 2 - 2 - -    - - 2 - 2 - 2 - -
+             * - - - - - - - - -    - - - - - - - - -    - 3 - - 3 - - 3 -    - 3 - - 3 - - 3 -
+             * - - - - - - - - -    - - - - - - - - -    - - - - - - - - -    4 - - - 4 - - - 4
+            */
+
+
+            // TODO 不会在单方向搜索到无连续值时停止这个方向的继续搜索，可以优化
+            // 按照 左右 上下 左上右下 左下右下 四个方向搜索连续5子的情况
+            // 左 - 右
+            for (let i = 1, count = 1; i < 5; i++) {
+                const idxLeft = colIdx - i;
+                const idxRight = colIdx + i;
+                if (idxRight <= boundry.right) {
+                    if (pattern[rowIdx][idxRight] === color) {
+                        count += 1;
+                    }
+                }
+
+                if (idxLeft >= boundry.left) {
+                    if (pattern[rowIdx][idxLeft] === color) {
+                        count += 1;
+                    }
+                }
+                if (count >= 5) {
+                    return true;
+                }
+            }
+
+            // 上 - 下
+            for (let i = 1, count = 1; i < 5; i++) {
+                const idxTop = rowIdx - i;
+                const idxBottom = rowIdx + i;
+                if (idxTop >= boundry.top) {
+                    if (pattern[idxTop][colIdx] === color) {
+                        count += 1;
+                    }
+                }
+
+                if (idxBottom <= boundry.bottom) {
+                    if (pattern[idxBottom][colIdx] === color) {
+                        count += 1;
+                    }
+                }
+
+                if (count >= 5) {
+                    return true;
+                }
+            }
+
+            // 左上 - 右下
+            for (let i = 1, count = 1; i < 5; i++) {
+                const idxLeft = colIdx - i;
+                const idxRight = colIdx + i;
+                const idxTop = rowIdx - i;
+                const idxBottom = rowIdx + i;
+
+                if (idxLeft >= boundry.left && idxTop >= boundry.top) {
+                    if (pattern[idxTop][idxLeft] === color) {
+                        count += 1;
+                    }
+                }
+
+                if (idxRight <= boundry.right && idxBottom <= boundry.bottom) {
+                    if (pattern[idxBottom][idxRight] === color) {
+                        count += 1;
+                    }
+                }
+                if (count >= 5) {
+                    return true;
+                }
+            }
+
+            // 右上 - 左下
+            for (let i = 1, count = 1; i < 5; i++) {
+                const idxLeft = colIdx - i;
+                const idxRight = colIdx + i;
+                const idxTop = rowIdx - i;
+                const idxBottom = rowIdx + i;
+
+                if (idxRight <= boundry.right && idxTop >= boundry.top) {
+                    if (pattern[idxTop][idxRight] === color) {
+                        count += 1;
+                    }
+                }
+
+                if (idxLeft >= boundry.left && idxBottom <= boundry.bottom) {
+                    if (pattern[idxBottom][idxLeft] === color) {
+                        count += 1;
+                    }
+                }
+
+                if (count >= 5) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        let playerColor = whiteColor;
+
+        // 生成 size * size 大小的二维数组
+        // let pattern = Array.from(Array(15), () => new Array(15).fill(0));
+
+        let pattern = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
+
+        generateBoard($board, pattern)
+        // 棋盘点击事件委托到 $board 节点，统一处理点击逻辑
+        $board.addEventListener('click', function (event) {
+            const { target: $cell } = event;
+            // 当前落子位置没有棋子时开始落子逻辑，若有棋子则忽略
+            if ($cell.classList.contains('cell') && $cell.childNodes.length === 0) {
+                chessMove($cell);
+            }
+        });
+        // $board.childNodes[0].childNodes[0].innerHTML = "<div class=\"black-chess\"></div>";
+        // $board.childNodes[1].childNodes[0].innerHTML = "<div class=\"white-chess\"></div>";
+        // $board.childNodes[0].childNodes[1].innerHTML = "<div class=\"black-chess\"></div>";
+        // $board.childNodes[1].childNodes[1].innerHTML = "<div class=\"white-chess\"></div>";
+
+    </script>
+
+</body>
+
+</html>
