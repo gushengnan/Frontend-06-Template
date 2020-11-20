@@ -1,0 +1,64 @@
+<script>
+    function find(source, pattern) {
+        // 找出 * 的个数并存储
+        let starCount = 0;
+        for (let i = 0; i < pattern.length; i++) {
+            if (pattern[i] === '*') {
+                starCount++;
+            }
+        }
+
+        // Case: 没有 * 号
+        // 如果没 *，source 与 pattern 需要一一严格匹配，问号匹配任何字符
+        if (starCount === 0) {
+            for (let i = 0; i < pattern.length; i++) {
+                if (pattern[i] !== source[i] && pattern[i] !== '?') {
+                    return false;
+                }
+            }
+            return;
+        }
+
+        let i = 0;
+        let lastIndex = 0;
+
+        // 带 * 字符串逻辑开始
+        // Step 1: 严格匹配至第一个 * 号
+        for (i = 0; pattern[i] !== '*'; i++) {
+            if (pattern[i] !== source[i] && pattern[i] !== '?') {
+                return false;
+            }
+        }
+
+        // 第一个 * 的索引
+        lastIndex = i;
+        // Case: 2个或2个以上 * 号
+        // 只处理除了最后一个星号外的其他星号情况
+        for (let p = 0; p < starCount - 1; p++) {
+            i++;
+            let subPattern = '';
+            while (pattern[i] !== '*') {
+                subPattern += pattern[i];
+                i++;
+            }
+            let reg = new RegExp(subPattern.replace(/\?/g, '[\\s\\S]'), 'g');
+            // 从 * 的位置开始匹配
+            reg.lastIndex = lastIndex;
+
+            if (!reg.exec(source)) {
+                return false;
+            }
+
+            lastIndex = reg.lastIndex;
+        }
+
+        // Case: 处理最后一个 * 号，如果只有一个 * 号，则只走这个方法，从后往前匹配
+        for (let j = 0; j <= source.length - lastIndex && pattern[pattern.length - j] !== '*'; j++) {
+            if (pattern[pattern.length - j] !== source[source.length - j] && pattern[pattern.length - j] !== '?') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+</script>
