@@ -1,3 +1,6 @@
+const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
+const net = require('net');
+
 class Request {
   constructor(options) {
     const { method = "GET", host, port = 80, path = '/', body = {}, headers = {} } = options;
@@ -23,8 +26,25 @@ class Request {
 
   send() {
     return new Promise((resolve, reject) => {
-      // ...
+      const parser = new ResponseParser;
+      resolve('');
     });
+  }
+}
+
+class ResponseParser {
+  constructor() {
+
+  }
+
+  receive(string) {
+    for (let i = 0; i < string.length; i++) {
+      this.receiveChar(string.charAt(i));
+    }
+  }
+
+  receiveChar(char) {
+
   }
 }
 
