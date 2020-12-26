@@ -18,7 +18,28 @@ function addCSSRules(text) {
 }
 
 function match(element, selector) {
+    if (!selector || !element.attributes) {
+        return false;
+    }
 
+    if (selector.charAt(0) === '#') {
+        let attr = element.attributes.filter(attr => attr.name === 'id');
+        if (attr && attr.value === selector.replace('#', '')) {
+            return true;
+        }
+    } else if (selector.charAt(0) === '.') {
+        let attr = element.attributes.filter(attr => attr.name === 'class');
+        let className = attr && attr.value && attr.value.split(/\s+/).filter(item => !!item) || [];
+        if (className.incluedes(selector.replace('.', ''))) {
+            return true;
+        }
+    } else {
+        if (element.tagName === selector) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function computeCSS(element) {
