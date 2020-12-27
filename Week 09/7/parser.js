@@ -44,14 +44,39 @@ function match(element, selector) {
 
 function specificity(selector) {
     let p = [0, 0, 0, 0];
+    // inline   id    class tag
+    // 1000     100   10    1
+    // 假设只考虑 class tag id 三种简单选择器的复合
+    // div.class.#id 
+
     let selectorParts = selector.split(' ');
     for (let part of selectorParts) {
+        // 获取剩余部分，计算 id 选择器和 类 选择器的数量，后添加至 specificity 数组对应位中
+        let remain;
         if (part.charAt(0) == '#') {
             p[1] += 1;
+            remain = part.slice(1);
         } else if (part.charAt(0) === '.') {
             p[2] += 1;
+            remain = part.slice(1);
         } else {
             p[3] += 1;
+            remain = part;
+        }
+        // 当第一位为 # 时，可能的极端情况 #id#id.c1.c2.c3 不会有 tagName
+        // 当第一位为 . 时，可能的极端情况 .c1.c2#id#id.c3 不会有 tagName
+        // 按照复合选择器的复杂程度累加 specificity 对应位，获得权重
+        // 举例：
+        // #id#id > #id
+        // #id.c1 = #id.c2
+        // #id.c1 < #id.c1.c2
+        let idCnt = remain.split('#').length - 1;
+        let clzCnt = remain.split('.').length - 1;
+        if (idCnt > 0) {
+            p[1] += idCnt;
+        }
+        if (clzCnt > 0) {
+            p[2] += clzCnt;
         }
     }
     return p;
