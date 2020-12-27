@@ -42,6 +42,34 @@ function match(element, selector) {
     return false;
 }
 
+function specificity(selector) {
+    let p = [0, 0, 0, 0];
+    let selectorParts = selector.split(' ');
+    for (let part of selectorParts) {
+        if (part.charAt(0) == '#') {
+            p[1] += 1;
+        } else if (part.charAt(0) === '.') {
+            p[2] += 1;
+        } else {
+            p[3] += 1;
+        }
+    }
+    return p;
+}
+
+function compare(sp1, sp2) {
+    if (sp1[0] - sp2[0]) {
+        return sp1[0] - sp2[0];
+    }
+    if (sp1[1] - sp2[1]) {
+        return sp1[1] - sp2[1];
+    }
+    if (sp1[2] - sp2[2]) {
+        return sp1[2] - sp2[2];
+    }
+    return sp1[3] - sp2[3];
+}
+
 function computeCSS(element) {
     // 浅拷贝 stack 后反转数组，不影响后续的parsing，按照由子到父排列。
     let elements = stack.slice().reverse();
@@ -69,7 +97,20 @@ function computeCSS(element) {
         }
 
         if (matched) {
-            console.log('Element', element, 'matched rule', rule);
+            let sp = specificity(rule.selectors[0]);
+            let computedStyle = element.computedStyle;
+            for (let declaration of rule.declarations) {
+                if (!computedStyle[declaration.property]) {
+                    computedStyle[declaration.property] = {};
+                }
+                if (!computedStyle[declaration.property].specificity) {
+                    computedStyle[declaration.property].value = declaration.value;
+                    computedStyle[declaration.property].specificity = sp;
+                } else if (compare(computedStyle[declaration.property].specificity, sp) < 0) {
+                    computedStyle[declaration.property].value = declaration.value;
+                    computedStyle[declaration.property].specificity = sp;
+                }
+            }
         }
     }
 }

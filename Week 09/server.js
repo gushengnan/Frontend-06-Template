@@ -15,7 +15,7 @@ http.createServer((request, response) => {
     <style>
       body div #myid {
         width: 100px;
-        background: #ff5000;
+        background-color: #ff5000;
       }
       body div img {
         width: 30px;
