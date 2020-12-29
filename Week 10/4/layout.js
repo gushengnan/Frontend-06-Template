@@ -1,14 +1,27 @@
+// hyphen 连字符方式字符串转换为 camelCase
+function hyphen2CamelCase(str) {
+    return str.split('-').map((s, i) => {
+        if (i !== 0) {
+            let tmp = s.split('');
+            tmp[0] = tmp[0].toUpperCase();
+            return tmp.join('');
+        }
+        return s;
+    }).join('');
+}
+
 function getStyle(element) {
     if (!element.style) {
         element.style = {};
         for (let prop in element.computedStyle) {
-            element.style[prop] = element.computedStyle[prop].value;
-            if (element.style[prop].toString().match(/px$/)) {
-                element.style[prop] = parseInt(element.style[prop])
+            styleProp = hyphen2CamelCase(prop);
+            element.style[styleProp] = element.computedStyle[prop].value;
+            if (element.style[styleProp].toString().match(/px$/)) {
+                element.style[styleProp] = parseInt(element.style[styleProp])
             }
 
-            if (element.style[prop].toString().match(/^[0-9\.]+$/)) {
-                element.style[prop] = parseInt(element.style[prop])
+            if (element.style[styleProp].toString().match(/^[0-9\.]+$/)) {
+                element.style[styleProp] = parseInt(element.style[styleProp])
             }
         }
     }
