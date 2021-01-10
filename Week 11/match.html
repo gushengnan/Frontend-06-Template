@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Function Test</title>
+</head>
+
+<body>
+    <div id="parentId" class="parentClass">
+        <div id="1" class="class1">
+            Node1
+        </div>
+        <div id="2" class="class2">
+            Node2
+        </div>
+        <div id="3" class="class3">
+            Node3
+        </div>
+    </div>
+    <script>
+        /**
+         * 编写一个 match 函数。它接收两个参数：
+         * 第一个参数是一个选择器字符串性质，
+         * 第二个是一个 HTML 元素。
+         * 这个元素你可以认为它一定会在一棵 DOM 树里面。
+         * 通过选择器和 DOM 元素来判断，当前的元素是否能够匹配到我们的选择器。
+         * （不能使用任何内置的浏览器的函数，仅通过 DOM 的 parent 和 children 这些 API，来判断一个元素是否能够跟一个选择器相匹配。）
+         * 以下是一个调用的例子。
+         */
+        function match(selector, element) {
+            // 从子到父反向排序
+            const selectors = selector.split(" ").reverse();
+            let curIdx = 0;
+            let matched = 0;
+            let curElement = element;
+
+            // 成功匹配到节点，或者匹配到 HTML 根节点则退出匹配
+            while (curIdx < selectors.length && (curElement && curElement.tagName !== 'HTML')) {
+                let rules = selectors[curIdx].match(/(#|.)?[\w-]+/g);
+                let matchCount = 0;
+                // 针对当前节点进行匹配
+                for (let rule of rules) {
+                    // 如果不匹配，分为2种情况，如果是首次匹配，则直接返回。如果不是首次匹配，则表示当前节点满足
+                    if (!matchSingleSelector(rule, curElement)) {
+                        if (curIdx === 0) {
+                            return false;
+                        }
+                        // 本轮不再继续匹配
+                        continue;
+                    } else {
+                        matchCount++;
+                    }
+                }
+
+                // 说明此轮匹配不成功，向父组件继续匹配当前选择器
+                if (matchCount !== rules.length) {
+                    curElement = curElement.parentElement;
+                } else {
+                    curElement = curElement.parentElement;
+                    curIdx++;
+                    matched++;
+                }
+            }
+
+            return matched >= selectors.length ? true : false;
+        }
+
+        // 只匹配简单选择器的函数
+        function matchSingleSelector(selector, element) {
+            if (!selector || !element.attributes) {
+                return false;
+            }
+            // 如果是简单选择器，则重用 toy-browser 中的 match 方法进行匹配
+            if (selector.charAt(0) == "#") {
+                var attr = element.attributes['id'].name === 'id';
+                if (attr && element.attributes['id'].value === selector.replace("#", "")) {
+                    return true;
+                }
+            } else if (selector.charAt(0) == ".") {
+                var attr = element.attributes['class'].name === 'class'
+                if (attr) {
+                    return element.attributes['class'].value.split(" ").some((value) => {
+                        return value === selector.replace(".", '');
+                    });
+                }
+            } else {
+                if (element.tagName === (selector && selector.toUpperCase())) {
+                    return true;
+                }
+            }
+        }
+
+        console.log(match("section #1.class1", document.getElementById("1")));
+        console.log(match("div#parentId #2.class2", document.getElementById("2")));
+        console.log(match("div#parentId.parentClass #3.class3", document.getElementById("3")));
+    </script>
+</body>
+
+</html>
