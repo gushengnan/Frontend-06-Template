@@ -1,18 +1,18 @@
-percision mediump float;
+precision mediump float;
 
 void mainImage() {
     // vec3 r = vec3(100.0, 100.0, 1.0);
 }
 
 float distance(vec2 point, vec3 line) {
-    return (line.x * point.x + line.y * point.y + line.z) / sqrt(point.x * point.x + point.y * point.y)
+    return (line.x * point.x + line.y * point.y + line.z) / sqrt(point.x * point.x + point.y * point.y);
 }
 
 void main() {
     // vec3 st = gl_FragCoord.xy;
     vec4 lightgreen = vec4(0.26, 0.72, 0.51, 1.0);
     vec4 darkgreen = vec4(0.208, 0.286, 0.368, 1.0);
-    vec white = vec4(1.0, 1.0, 1.0, 1.0);
+    vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
 
     // float d1 = distance(gl_FragCoord, vec3(1, -0.589, 100.0))
     float stepSize = 0.8;
