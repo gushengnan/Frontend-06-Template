@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bfc-demo-2</title>
+</head>
+
+<body>
+    <div id="1" style="width: 100px; height: 100px; background-color: aqua; margin: 20px;"></div>
+    <!-- 当边距折叠发生时，折叠位置选择所有 margin 中最大的那个。 -->
+    <!-- 可以通过使用 overflow: hidden 创建 BFC 来避免边距折叠问题 -->
+    <!-- 但是仅对生成了新 BFC 的子元素（div#2-1）有效，父元素（div#2）与相邻元素（div#1）已然存在于一个 BFC 中，会折叠 -->
+    <div id="2" style="overflow: hidden; margin-top:30px; background: pink;">
+        <div id="2-1" style="width: 100px; height: 100px; background-color: aqua; margin: 20px;"></div>
+    </div>
+</body>
+
+</html>
