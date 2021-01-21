@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events Demo</title>
+</head>
+
+<body>
+    <div id="a" style="width: 100%;height: 300px; padding:50px; background-color: lightblue;">
+        a
+        <div id="b" style="width: 100%;height: 200px; background-color: pink;">
+            b
+        </div>
+    </div>
+    <script>
+        const $a = document.getElementById('a');
+        const $b = document.getElementById('b');
+
+        $a.addEventListener('click', e => {
+            console.log('a');
+        });
+        $b.addEventListener('click', e => {
+            console.log('b');
+        });
+
+        $a.addEventListener('click', e => {
+            console.log('a1');
+        }, true);
+        $b.addEventListener('click', e => {
+            console.log('b1');
+        }, true);
+
+
+
+    </script>
+</body>
+
+</html>
