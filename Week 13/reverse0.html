@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="a">
+        <span>1</span>
+        <a>2</a>
+        <a>3</a>
+        <div>4</div>
+    </div>
+    <script>
+        let element = document.getElementById('a');
+        // 不可变数据的解法，浅拷贝一份子节点，反转数组后插入
+        function reverseChildren() {
+            let children = Array.prototype.slice.call(element.childNodes);
+
+            // 多余的步骤
+            for (let child of children) {
+                element.removeChild(child);
+            }
+
+            // 简化版清空子节点
+            // element.innerHTML = '';
+
+            children.reverse();
+
+            for (let child of children) {
+                element.appendChild(child);
+            }
+        }
+
+        reverseChildren();
+    </script>
+</body>
+
+</html>

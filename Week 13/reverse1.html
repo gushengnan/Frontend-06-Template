@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="a">
+        <span>1</span>
+        <a>2</a>
+        <a>3</a>
+        <div>4</div>
+    </div>
+    <script>
+        let element = document.getElementById('a');
+        // 利用 childNodes List 是一个 Living Collection，利用其实时变化性质从后向前插入
+        function reverseChildren() {
+            let total = element.childNodes.length;
+            while (total > 0) {
+                total--;
+                element.appendChild(element.childNodes[total])
+            }
+        }
+
+        reverseChildren();
+    </script>
+</body>
+
+</html>

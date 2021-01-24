@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="a">123<span style="background-color:pink;">456789</span>0123456789</div>
+    <script>
+        let range = new Range();
+        range.setStart(document.getElementById('a').childNodes[0], 3);
+        range.setEnd(document.getElementById('a').childNodes[2], 3);
+
+        // 从 span 的第 0 位到第三个子节点的 3 之前，被删除的 span 闭合标签会被补全
+        // range.setStart(document.getElementById('a').childNodes[1], 0);
+        // range.setEnd(document.getElementById('a').childNodes[2], 3);
+
+        // 从 span 的子节点 textNode 第三位开始，到外部 div 的第三个子节点的 3 之前，被截取的 span 部分会被补全包裹标签保存在 fragment 中
+        // range.setStart(document.getElementById('a').childNodes[1].childNodes[0], 3);
+        // range.setEnd(document.getElementById('a').childNodes[2], 3);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="a">
+        <span>1</span>
+        <a>2</a>
+        <a>3</a>
+        <div>4</div>
+    </div>
+    <script>
+        let element = document.getElementById('a');
+        // 利用 childNodes List 是一个 Living Collection，利用其实时变化性质从后向前插入
+        function reverseChildren() {
+            let range = new Range();
+            range.selectNodeContents(element);
+
+            // 提取一次 DOM
+            let fragment = range.extractContents();
+
+            // 剩余反转部分在 fragment 中进行（内存中），不会导致 DOM 树重排
+            let l = fragment.childNodes.length;
+            while (l-- > 0) {
+                fragment.appendChild(fragment.childNodes[l])
+            }
+
+            // 插入一次 DOM
+            element.appendChild(fragment);
+        }
+
+        reverseChildren();
+    </script>
+</body>
+
+</html>
