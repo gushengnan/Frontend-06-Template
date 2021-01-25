@@ -14,5 +14,6 @@ module.exports = {
             }
         ]
     },
-    mode: 'development'
+    mode: 'development',
+    devtool: 'cheap-module-source-map',
 }
