@@ -51,7 +51,7 @@ class Carousel extends Component {
                     children[pos].style.transform = `translateX(${- pos * 500 + offset * 500}px)`;
                 }
                 document.removeEventListener('mousemove', move);
-                document.removeEventListener('mousemove', up);
+                document.removeEventListener('mouseup', up);
             }
 
             document.addEventListener('mousemove', move);
