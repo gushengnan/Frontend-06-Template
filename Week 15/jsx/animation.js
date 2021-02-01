@@ -9,11 +9,16 @@ const PAUSE_TIME = Symbol('pause-time');
 
 export class Timeline {
     constructor() {
+        this.state = "INITED";
         this[ANIMATIONS] = new Set();
         this[START_TIME] = new Map();
     }
 
     start() {
+        if (this.state !== 'INITED') {
+            return;
+        }
+        this.state = "STARTED";
         let startTime = Date.now();
         this[PAUSE_TIME] = 0;
         this[TICK] = () => {
@@ -50,14 +55,19 @@ export class Timeline {
     // }
 
     pause() {
-        // 如果当前是暂停状态，再调用暂停则不会重新记录暂停时间
-        if (!this[PAUSE_START]) {
-            this[PAUSE_START] = Date.now();
-            cancelAnimationFrame(this[TICK_HANDLER]);
+        if (this.state !== 'STARTED') {
+            return;
         }
+        this.state = "PAUSED";
+        this[PAUSE_START] = Date.now();
+        cancelAnimationFrame(this[TICK_HANDLER]);
     }
 
     resume() {
+        if (this.state !== 'PAUSED') {
+            return;
+        }
+        this.state = "STARTED";
         // TODO 需要做多次调用 resume 情况的处理
         this[PAUSE_TIME] += Date.now() - this[PAUSE_START];
         this[PAUSE_START] = 0;
@@ -66,6 +76,7 @@ export class Timeline {
 
     reset() {
         this.pause();
+        this.state = "INITED";
         // FIXME startTime 需要提升为对象属性
         let startTime = Date.now();
         this[PAUSE_TIME] = 0;
