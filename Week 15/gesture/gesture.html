@@ -5,17 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>gesture test ground</title>
-    <script src="./gesture.js"></script>
 </head>
 
 <body>
 
 </body>
-<script>
+<script type="module">
+    import { enableGesture } from './gesture.js';
     // 禁用右键菜单
     document.oncontextmenu = function () {
         return false;
     };
+
+    enableGesture(document.documentElement);
+
     document.documentElement.addEventListener('tap', () => {
         console.log('tap event triggered');
     });
