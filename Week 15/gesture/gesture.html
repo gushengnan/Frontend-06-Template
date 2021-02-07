@@ -8,13 +8,17 @@
     <script src="./gesture.js"></script>
 </head>
 
-<body oncontextenu="event.preventDefault()">
+<body>
 
 </body>
 <script>
+    // 禁用右键菜单
+    document.oncontextmenu = function () {
+        return false;
+    };
     document.documentElement.addEventListener('tap', () => {
         console.log('tap event triggered');
-    })
+    });
 </script>
 
 </html>

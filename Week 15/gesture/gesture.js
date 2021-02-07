@@ -172,10 +172,10 @@ const end = (point, ctx) => {
 
     // v 单位： 像素/毫秒
     if (v > 1.5) {
-        console.log(flick);
-        context.isFlick = true;
+        console.log(v);
+        ctx.isFlick = true;
     } else {
-        context.isFlick = false;
+        ctx.isFlick = false;
     }
     // console.log('end', point.clientX, point.clientY);
 };
