@@ -18,6 +18,7 @@ export class dispatcher {
 
 export class Listener {
     constructor(element, recognizer) {
+        // TODO 提供 API 解除事件绑定，避免内存泄露
         let isListeningMouse = false;
         let contexts = new Map();
 
