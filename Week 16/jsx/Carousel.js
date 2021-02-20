@@ -76,6 +76,7 @@ class Carousel extends Component {
 
             // -1 0 1
             let direction = Math.round((x % 500) / 500);
+            console.log(direction);
 
             if (event.isFlick) {
                 if (event.velocity < 0) {
@@ -97,7 +98,7 @@ class Carousel extends Component {
                         children[pos].style,
                         'transform',
                         - pos * 500 + offset * 500 + x % 500,
-                        - pos * 500 + offset * 500 + direction % 500,
+                        - pos * 500 + offset * 500 + direction * 500,
                         animationDuration,
                         0,
                         ease,
